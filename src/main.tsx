@@ -14,8 +14,8 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
       clientId="mIUsoezCpUuf9zcm7py5syzgtVvNQTvD"
       authorizationParams={{
         redirect_uri: window.location.origin,
-        scope: 'read:current_user update:current_user_metadata',
-        audience: 'https://afrozeprojectmanagement.us.auth0.com/api/v2/',
+        scope: 'openid read:project write:project update:project delete:project read:company write:company update:company delete:company ',
+        audience: 'company',
       }}
     >
       <ThemeProvider theme={theme}>

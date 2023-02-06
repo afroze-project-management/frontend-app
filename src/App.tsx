@@ -9,11 +9,11 @@ import {
 import { AppLayout } from './components/AppLayout';
 import Protected from './components/Protected';
 import CompaniesPage from './pages/CompaniesPage';
-import CompanyDetailsPage from './pages/EditCompanyPage';
+import CreateCompanyPage from './pages/CreateCompanyPage';
+import CompanyDetailsPage from './pages/CompanyDetailsPage';
 import HomePage from './pages/HomePage';
-import ProductsPage from './pages/ProductsPage';
+import ProjectsPage from './pages/ProjectsPage';
 import { ApplicationUser } from './types/ApplicationUser';
-
 
 
 function App() {
@@ -24,10 +24,10 @@ function App() {
       <Route element={<AppLayout />}>
         <Route path="/" element={<HomePage />} />
         <Route
-          path="/products"
+          path="/projects"
           element={
             <Protected isAuthenticated={isAuthenticated}>
-              <ProductsPage />
+              <ProjectsPage />
             </Protected>
           }
         />
@@ -40,10 +40,18 @@ function App() {
           }
         />
         <Route
-          path="/companies/:companyId"
+          path="/companies/edit/:companyId"
           element={
             <Protected isAuthenticated={isAuthenticated}>
               <CompanyDetailsPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/companies/create"
+          element={
+            <Protected isAuthenticated={isAuthenticated}>
+              <CreateCompanyPage />
             </Protected>
           }
         />

@@ -1,15 +1,18 @@
 import { useAuth0 } from '@auth0/auth0-react';
-import { Container, Box, Typography, Grid, Button } from '@mui/material';
+import { Container, Box, Typography, Grid, Button, IconButton } from '@mui/material';
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
 import { CompanyResponseModel } from '../apis/company/CompanyResponseModel';
 import { HttpResponseModel } from '../apis/HttpResponseModel';
-import { DataGrid, GridColDef, GridValueGetterParams, GridRenderCellParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Link as RouterLink } from 'react-router-dom';
+import InfoIcon from '@mui/icons-material/Info';
+import DeleteForever from '@mui/icons-material/DeleteForever';
 
 export default function CompaniesPage() {
   const { getAccessTokenSilently } = useAuth0();
   const [companies, setCompanies] = useState<CompanyResponseModel[]>([]);
+  const [token, setToken] = useState('');
 
   useEffect(() => {
     const getCompanies = async () => {
@@ -24,6 +27,9 @@ export default function CompaniesPage() {
               },
             },
           );
+
+        setToken(accessToken);
+        console.log('cat: ', accessToken);
         setCompanies(fetchedCompanies.data.data);
       } catch (e: any) {
         console.log(e.message);
@@ -39,15 +45,26 @@ export default function CompaniesPage() {
     { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderActions(p) }
   ];
 
+  const deleteCompany = async (id: string) => {
+    await axios.delete(`http://localhost:8012/company/${id}/`, {
+      headers: {
+        Authorization: `bearer ${token}`,
+      },
+    });
+    let updatedCompanies = companies.filter(x => x.id !== +id);
+    setCompanies(updatedCompanies);
+  }
+
   const renderActions = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
-    return <Button
-      color='primary'
-      size='small'
-      component={RouterLink}
-      to={`/companies/${params.row.id}`}
-    >
-      Info
-    </Button>
+    return (
+      <>
+        <IconButton color='info' aria-label='info' component={RouterLink} to={`/companies/edit/${params.row.id}`}>
+          <InfoIcon />
+        </IconButton>
+        <IconButton color='error' aria-label='error' onClick={() => deleteCompany(params.row.id)}>
+          <DeleteForever />
+        </IconButton>
+      </>);
   }
 
 
@@ -56,23 +73,30 @@ export default function CompaniesPage() {
       <Grid container style={{ marginTop: 20 }}>
         <Grid
           item
-          xs={10}
+          xs={12}
           container
           direction="column"
         >
           <Grid item />
-          <Grid item>
-            <Typography
+
+          <Grid item container direction="row" alignItems='center'>
+            <Grid item xs> <Typography
               gutterBottom
-              variant="h3"
+              variant="h4"
             >Companies</Typography>
+            </Grid>
+            <Grid item xs />
+            <Grid item xs>
+              <Button component={RouterLink} to="/companies/create">Add Company</Button>
+            </Grid>
           </Grid>
-          <Box sx={{ height: 600, width: '100%' }}>
+
+          <Box sx={{ height: 500, width: '100%' }}>
             <DataGrid
               rows={companies}
               columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
+              pageSize={7}
+              rowsPerPageOptions={[7]}
             />
           </Box>
         </Grid>

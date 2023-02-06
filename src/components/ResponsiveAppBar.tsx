@@ -17,8 +17,6 @@ import { Link as RouterLink } from 'react-router-dom';
 
 import { ApplicationUser } from '../types/ApplicationUser';
 
-const pages = ['Companies', 'Products'];
-
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -52,7 +50,6 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="/"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -96,11 +93,18 @@ function ResponsiveAppBar() {
                   display: { xs: 'block', md: 'none' },
                 }}
               >
-                {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">{page}</Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem
+                  key="companies-page"
+                  component={RouterLink}
+                  to="/companies">
+                  <Typography textAlign="center">Companies</Typography>
+                </MenuItem>
+                <MenuItem
+                  key="projects-page"
+                  component={RouterLink}
+                  to="/projects">
+                  <Typography textAlign="center">Projects</Typography>
+                </MenuItem>
               </Menu>
             </Box>
           )}
@@ -109,7 +113,6 @@ function ResponsiveAppBar() {
             variant="h5"
             noWrap
             component="a"
-            href=""
             sx={{
               mr: 2,
               display: { xs: 'flex', md: 'none' },
@@ -135,24 +138,15 @@ function ResponsiveAppBar() {
                   Companies
                 </Button>
                 <Button
-                  key="products-page"
+                  key="projects-page"
                   sx={{ my: 2, color: 'white', display: 'block' }}
                   component={RouterLink}
-                  to="/products"
+                  to="/projects"
                 >
-                  Products
+                  Projects
                 </Button>
               </>
             )}
-            {/*{isAuthenticated && pages.map((page) => (*/}
-            {/*  <Button*/}
-            {/*    key={page}*/}
-            {/*    onClick={handleCloseNavMenu}*/}
-            {/*    sx={{ my: 2, color: 'white', display: 'block' }}*/}
-            {/*  >*/}
-            {/*    {page}*/}
-            {/*  </Button>*/}
-            {/*))}*/}
           </Box>
 
           {isAuthenticated ? (
