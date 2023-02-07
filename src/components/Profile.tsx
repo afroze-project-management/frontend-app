@@ -36,7 +36,7 @@ const Profile = () => {
 
         setUserMetadata(user_metadata);
       } catch (e) {
-        console.log(e);
+        console.error(e);
       }
     };
 

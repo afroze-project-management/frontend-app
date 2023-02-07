@@ -1,16 +1,19 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
-import { SnackbarCloseReason, Container, Grid, Typography, TextField, Button, Snackbar, Alert } from "@mui/material";
+import { SnackbarCloseReason, Container, Grid, Typography, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
+import { TaskResponseModel } from "../../apis/project/TaskResponseModel";
 import RedirectSpinner from "../../components/RedirectSpinner"
 
 const defaultValues = {
   name: "",
-  tags: "",
-  companyId: "",
+  description: "",
+  actualEffort: 0,
+  complete: false,
+  projectId: "",
 };
 
 interface ErrorState {
@@ -25,14 +28,15 @@ const errorDefaults: ErrorState = {
 
 const defaultValidation = {
   name: true,
-  tags: true,
-  companyId: false,
+  description: true,
+  actualEffort: true,
+  projectId: false,
 }
 
 
 const CreateTaskPage = () => {
-  const { companyId } = useParams();
-  const [formValues, setFormValues] = useState({ ...defaultValues, companyId: companyId });
+  const { projectId } = useParams();
+  const [formValues, setFormValues] = useState({ ...defaultValues, projectId });
   const [error, setError] = useState<ErrorState>(errorDefaults);
   const [validation, setValidation] = useState(defaultValidation);
   const { getAccessTokenSilently } = useAuth0();
@@ -40,7 +44,7 @@ const CreateTaskPage = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<React.FormEventHandler<HTMLFormElement> | undefined> => {
     event.preventDefault();
-    await createProject();
+    await createTask();
     return;
   };
 
@@ -69,9 +73,8 @@ const CreateTaskPage = () => {
     return Object.values(validation).every(x => !x);
   }
 
-  const createProject = async () => {
-    console.log(validation)
-    if (formValues.companyId === '' || !isFormValid()) {
+  const createTask = async () => {
+    if (formValues.projectId === '' || !isFormValid()) {
       setError({
         errorMessage: 'Invalid data',
         showError: true
@@ -81,8 +84,8 @@ const CreateTaskPage = () => {
 
     try {
       const accessToken = await getAccessTokenSilently();
-      await axios.post<HttpResponseModel<ProjectResponseModel>>(
-        `http://localhost:8012/project`, formValues,
+      await axios.post<HttpResponseModel<TaskResponseModel>>(
+        `http://localhost:8012/project/${projectId}/tasks`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,
@@ -91,7 +94,7 @@ const CreateTaskPage = () => {
       );
       navigate('/projects');
     } catch (e) {
-      const err = e as AxiosError<HttpResponseModel<ProjectResponseModel>>;
+      const err = e as AxiosError<HttpResponseModel<TaskResponseModel>>;
       if (err.response?.status === 400) {
         setError({
           errorMessage: err.response.data.errorMessage,
@@ -141,15 +144,45 @@ const CreateTaskPage = () => {
               <Grid item style={{ marginTop: 24 }}>
                 <TextField
                   fullWidth
-                  id="tags-input"
-                  name="tags"
-                  label="Tags"
+                  id="description-input"
+                  name="description"
+                  label="Description"
                   type="text"
-                  value={formValues.tags}
-                  error={validation.tags}
-                  helperText={validation.tags && 'Required'}
+                  value={formValues.description}
+                  error={validation.description}
+                  helperText={validation.description && 'Required'}
                   onChange={handleInputChange}
                 />
+              </Grid>
+              <Grid item style={{ marginTop: 24 }}>
+                <TextField
+                  fullWidth
+                  id="actualEffort-input"
+                  name="actualEffort"
+                  label="Effort"
+                  type="number"
+                  value={formValues.actualEffort}
+                  error={validation.actualEffort}
+                  helperText={validation.actualEffort && 'Required'}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+              <Grid item style={{ marginTop: 24 }}>
+                <FormGroup>
+                  <FormControlLabel control={
+                    <Checkbox
+                      id="isComplete-input"
+                      name="complete"
+                      checked={formValues.complete}
+                      onChange={(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+                        setFormValues({
+                          ...formValues,
+                          complete: checked
+                        })
+                      }}
+                    />
+                  } label="Completed" />
+                </FormGroup>
               </Grid>
               <Grid item style={{ marginTop: 24 }}>
                 <Button variant="contained" color="primary" type="submit" fullWidth>

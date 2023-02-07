@@ -128,7 +128,7 @@ const CompanyDetailsPage = () => {
         });
         setToken(accessToken);
       } catch (e: any) {
-        console.log(e.message);
+        console.error(e.message);
       }
     };
 

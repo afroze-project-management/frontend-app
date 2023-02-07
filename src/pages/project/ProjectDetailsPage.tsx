@@ -100,10 +100,14 @@ const ProjectDetailsPage = () => {
       </>);
   }
 
+  const renderBooleanCell = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
+    return <>{params.row.complete ? 'Yes' : 'No'}</>;
+  }
+
   const taskColumns: GridColDef[] = [
     { field: 'name', headerName: 'Task', flex: 0.4 },
     { field: 'actualEffort', headerName: 'Effort (hours)', flex: 0.2 },
-    { field: 'isComplete', headerName: 'Completed', flex: 0.2 },
+    { field: 'complete', headerName: 'Completed', flex: 0.2, renderCell: (p) => renderBooleanCell(p) },
     { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderTaskActions(p) }
   ];
 
@@ -128,7 +132,7 @@ const ProjectDetailsPage = () => {
         });
         setToken(accessToken);
       } catch (e: any) {
-        console.log(e.message);
+        console.error(e.message);
       }
     };
 

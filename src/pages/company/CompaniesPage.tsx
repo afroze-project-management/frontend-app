@@ -33,7 +33,7 @@ const CompaniesPage = () => {
         setToken(accessToken);
         setCompanies(fetchedCompanies.data.data);
       } catch (e: any) {
-        console.log(e.message);
+        console.error(e.message);
       }
     };
 

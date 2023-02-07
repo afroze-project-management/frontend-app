@@ -70,7 +70,6 @@ const CreateProjectPage = () => {
   }
 
   const createProject = async () => {
-    console.log(validation)
     if (formValues.companyId === '' || !isFormValid()) {
       setError({
         errorMessage: 'Invalid data',
