@@ -1,5 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import { Container, Grid, Typography, Button, TextField, Snackbar, Alert, SnackbarCloseReason } from "@mui/material";
+import { Container, Grid, Typography, Button, TextField, Snackbar, Alert } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
@@ -53,11 +53,11 @@ const CreateCompanyPage = () => {
     });
   };
 
-  const handleSnackbarClose = (event: Event | React.SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleSnackbarClose = () => {
     setError({ ...error, showError: false });
   }
 
-  const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
+  const handleAlertClose = () => {
     setError({ ...error, showError: false });
   }
 
