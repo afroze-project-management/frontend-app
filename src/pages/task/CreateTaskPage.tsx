@@ -1,10 +1,9 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
-import { SnackbarCloseReason, Container, Grid, Typography, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { Container, Grid, Typography, TextField, Button, Snackbar, Alert, Checkbox, FormControlLabel, FormGroup } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
-import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
 import { TaskResponseModel } from "../../apis/project/TaskResponseModel";
 import RedirectSpinner from "../../components/RedirectSpinner"
 
@@ -42,10 +41,9 @@ const CreateTaskPage = () => {
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<React.FormEventHandler<HTMLFormElement> | undefined> => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await createTask();
-    return;
   };
 
   const handleInputChange: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -61,11 +59,11 @@ const CreateTaskPage = () => {
     });
   };
 
-  const handleSnackbarClose = (event: Event | React.SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleSnackbarClose = () => {
     setError({ ...error, showError: false });
   }
 
-  const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
+  const handleAlertClose = () => {
     setError({ ...error, showError: false });
   }
 

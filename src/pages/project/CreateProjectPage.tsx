@@ -1,5 +1,5 @@
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react"
-import { SnackbarCloseReason, Container, Grid, Typography, TextField, Button, Snackbar, Alert } from "@mui/material";
+import { Container, Grid, Typography, TextField, Button, Snackbar, Alert } from "@mui/material";
 import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -38,10 +38,9 @@ const CreateProjectPage = () => {
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<React.FormEventHandler<HTMLFormElement> | undefined> => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await createProject();
-    return;
   };
 
   const handleInputChange: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -57,11 +56,11 @@ const CreateProjectPage = () => {
     });
   };
 
-  const handleSnackbarClose = (event: Event | React.SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleSnackbarClose = () => {
     setError({ ...error, showError: false });
   }
 
-  const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
+  const handleAlertClose = () => {
     setError({ ...error, showError: false });
   }
 
