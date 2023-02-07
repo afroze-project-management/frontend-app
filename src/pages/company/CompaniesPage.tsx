@@ -1,15 +1,17 @@
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import { Container, Box, Typography, Grid, Button, IconButton } from '@mui/material';
 import axios, { AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import { CompanyResponseModel } from '../apis/company/CompanyResponseModel';
-import { HttpResponseModel } from '../apis/HttpResponseModel';
+import { CompanyResponseModel } from '../../apis/company/CompanyResponseModel';
+import { HttpResponseModel } from '../../apis/HttpResponseModel';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { Link as RouterLink } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 import DeleteForever from '@mui/icons-material/DeleteForever';
+import RedirectSpinner from '../../components/RedirectSpinner';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
-export default function CompaniesPage() {
+const CompaniesPage = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [companies, setCompanies] = useState<CompanyResponseModel[]>([]);
   const [token, setToken] = useState('');
@@ -29,7 +31,6 @@ export default function CompaniesPage() {
           );
 
         setToken(accessToken);
-        console.log('cat: ', accessToken);
         setCompanies(fetchedCompanies.data.data);
       } catch (e: any) {
         console.log(e.message);
@@ -40,8 +41,8 @@ export default function CompaniesPage() {
   }, []);
 
   const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Company', flex: 0.3 },
-    { field: 'tags', headerName: 'Tags', flex: 0.3 },
+    { field: 'name', headerName: 'Company', flex: 0.4 },
+    { field: 'tags', headerName: 'Tags', flex: 0.4 },
     { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderActions(p) }
   ];
 
@@ -58,7 +59,7 @@ export default function CompaniesPage() {
   const renderActions = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
     return (
       <>
-        <IconButton color='info' aria-label='info' component={RouterLink} to={`/companies/edit/${params.row.id}`}>
+        <IconButton color='info' aria-label='info' component={RouterLink} to={`/companies/${params.row.id}`}>
           <InfoIcon />
         </IconButton>
         <IconButton color='error' aria-label='error' onClick={() => deleteCompany(params.row.id)}>
@@ -75,32 +76,42 @@ export default function CompaniesPage() {
           item
           xs={12}
           container
-          direction="column"
+          direction="row"
+          alignItems='center'
         >
-          <Grid item />
 
-          <Grid item container direction="row" alignItems='center'>
-            <Grid item xs> <Typography
+          <Grid item xs={10} direction='row' alignItems='center'>
+            <Typography
               gutterBottom
               variant="h4"
             >Companies</Typography>
-            </Grid>
-            <Grid item xs />
-            <Grid item xs>
-              <Button component={RouterLink} to="/companies/create">Add Company</Button>
-            </Grid>
           </Grid>
 
-          <Box sx={{ height: 500, width: '100%' }}>
-            <DataGrid
-              rows={companies}
-              columns={columns}
-              pageSize={7}
-              rowsPerPageOptions={[7]}
-            />
-          </Box>
+          <Grid xs={2}>
+            <Button
+              startIcon={<AddCircleOutlineIcon />}
+              variant="outlined"
+              fullWidth
+              component={RouterLink}
+              to={`/companies/create`}>Add Company</Button>
+          </Grid>
+
+          <Grid xs={12}>
+            <Box sx={{ height: 500, width: '100%' }}>
+              <DataGrid
+                rows={companies}
+                columns={columns}
+                pageSize={7}
+                rowsPerPageOptions={[7]}
+              />
+            </Box>
+          </Grid>
         </Grid>
       </Grid>
     </Container>
   );
 }
+
+export default withAuthenticationRequired(CompaniesPage, {
+  onRedirecting: () => <RedirectSpinner />
+})

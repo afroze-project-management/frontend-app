@@ -7,17 +7,19 @@ import {
 } from 'react-router-dom';
 
 import { AppLayout } from './components/AppLayout';
-import Protected from './components/Protected';
-import CompaniesPage from './pages/CompaniesPage';
-import CreateCompanyPage from './pages/CreateCompanyPage';
-import CompanyDetailsPage from './pages/CompanyDetailsPage';
 import HomePage from './pages/HomePage';
-import ProjectsPage from './pages/ProjectsPage';
+import ProjectsPage from './pages/project/ProjectsPage';
 import { ApplicationUser } from './types/ApplicationUser';
+import ProjectDetailsPage from './pages/project/ProjectDetailsPage';
+import CreateProjectPage from './pages/project/CreateProjectPage';
+import CompaniesPage from './pages/company/CompaniesPage';
+import CompanyDetailsPage from './pages/company/CompanyDetailsPage';
+import CreateCompanyPage from './pages/company/CreateCompanyPage';
+import CreateTaskPage from './pages/task/CreateTaskPage';
 
 
 function App() {
-  const { isAuthenticated }: Auth0ContextInterface<ApplicationUser> = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently }: Auth0ContextInterface<ApplicationUser> = useAuth0();
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -26,33 +28,42 @@ function App() {
         <Route
           path="/projects"
           element={
-            <Protected isAuthenticated={isAuthenticated}>
-              <ProjectsPage />
-            </Protected>
+            <ProjectsPage />
           }
         />
         <Route
           path="/companies"
           element={
-            <Protected isAuthenticated={isAuthenticated}>
-              <CompaniesPage />
-            </Protected>
+            <CompaniesPage />
           }
         />
         <Route
-          path="/companies/edit/:companyId"
+          path="/companies/:companyId"
           element={
-            <Protected isAuthenticated={isAuthenticated}>
-              <CompanyDetailsPage />
-            </Protected>
+            <CompanyDetailsPage />
           }
         />
         <Route
           path="/companies/create"
           element={
-            <Protected isAuthenticated={isAuthenticated}>
-              <CreateCompanyPage />
-            </Protected>
+            <CreateCompanyPage />
+          }
+        />
+        <Route
+          path="/projects/:projectId"
+          element={
+            <ProjectDetailsPage />
+          }
+        />
+        <Route
+          path="/companies/:companyId/projects/create"
+          element={
+            <CreateProjectPage />
+          }
+        /><Route
+          path="/projects/:projectId/tasks/create"
+          element={
+            <CreateTaskPage />
           }
         />
       </Route>,

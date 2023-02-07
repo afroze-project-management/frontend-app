@@ -1,10 +1,11 @@
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
 import { Container, Grid, Typography, Button, TextField, Snackbar, Alert, SnackbarCloseReason } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios, { AxiosError } from 'axios';
-import { HttpResponseModel } from '../apis/HttpResponseModel';
-import { CompanyResponseModel } from '../apis/company/CompanyResponseModel';
+import { CompanyResponseModel } from "../../apis/company/CompanyResponseModel";
+import { HttpResponseModel } from "../../apis/HttpResponseModel";
+import RedirectSpinner from "../../components/RedirectSpinner";
 
 const defaultValues = {
   name: "",
@@ -35,14 +36,12 @@ const CreateCompanyPage = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): React.FormEventHandler<HTMLFormElement> | undefined => {
     event.preventDefault();
-    createCompany().then(res => console.log(res));
+    createCompany().then();
     return undefined;
   };
 
   const handleInputChange: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.currentTarget;
-    console.log('ic: name', name);
-    console.log('ic: value', value === '');
     setFormValues({
       ...formValues,
       [name]: value,
@@ -162,4 +161,6 @@ const CreateCompanyPage = () => {
   )
 }
 
-export default CreateCompanyPage;
+export default withAuthenticationRequired(CreateCompanyPage, {
+  onRedirecting: () => <RedirectSpinner />
+})

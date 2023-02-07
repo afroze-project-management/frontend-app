@@ -1,14 +1,15 @@
 import { useNavigate, useParams, Link as RouterLink } from "react-router-dom";
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { useEffect, useState } from 'react';
-import { CompanyResponseModel } from '../apis/company/CompanyResponseModel';
-import { HttpResponseModel } from '../apis/HttpResponseModel';
+import { HttpResponseModel } from '../../apis/HttpResponseModel';
 import { Container, Grid, Typography, TextField, Button, Snackbar, Alert, SnackbarCloseReason, Box, IconButton } from "@mui/material";
-import { ProjectSummaryResponseModel } from "../apis/project/ProjectSummaryResponseModel";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { DeleteForever } from "@mui/icons-material";
 import InfoIcon from '@mui/icons-material/Info';
+import RedirectSpinner from "../../components/RedirectSpinner";
+import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const defaultValues = {
   name: "",
@@ -30,29 +31,30 @@ const defaultValidation = {
   tags: true,
 }
 
-
-
-const CompanyDetailsPage = () => {
+const ProjectDetailsPage = () => {
   const [formValues, setFormValues] = useState(defaultValues);
   const [error, setError] = useState<ErrorState>(errorDefaults);
   const [validation, setValidation] = useState(defaultValidation);
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
-  const { companyId } = useParams();
-  const [company, setCompany] = useState<CompanyResponseModel | undefined>();
-  const [projects, setProjects] = useState<ProjectSummaryResponseModel[]>([]);
+  const { projectId } = useParams();
+  const [project, setProject] = useState<ProjectResponseModel>({
+    id: 0,
+    name: '',
+    tasks: [],
+    tags: '',
+    companyId: 0
+  });
   const [token, setToken] = useState('');
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): React.FormEventHandler<HTMLFormElement> | undefined => {
     event.preventDefault();
-    updateCompany().then(res => console.log(res));
+    updateProject().then();
     return undefined;
   };
 
   const handleInputChange: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.currentTarget;
-    console.log('ic: name', name);
-    console.log('ic: value', value === '');
     setFormValues({
       ...formValues,
       [name]: value,
@@ -76,87 +78,65 @@ const CompanyDetailsPage = () => {
     return Object.values(validation).every(x => !x);
   }
 
-  const deleteProject = async (id: number) => {
-    await axios.delete(`http://localhost:8012/project/${id}/`, {
+  const deleteTask = async (projectId: number, taskId: number) => {
+    await axios.delete(`http://localhost:8012/project/${projectId}/task/${taskId}`, {
       headers: {
         Authorization: `bearer ${token}`,
       },
     });
-    let updatedCompanies = projects.filter(x => x.id !== +id);
-    setProjects(updatedCompanies);
+    let updatedTasks = project.tasks === undefined ? [] : project.tasks.filter(x => x.id !== +projectId);
+    setProject({ ...project, tasks: updatedTasks });
   }
 
-
-  const renderProjectActions = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
+  const renderTaskActions = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
     return (
       <>
-        <IconButton color='info' aria-label='info' component={RouterLink} to={`/projects/edit/${params.row.id}`}>
+        <IconButton color='info' aria-label='info' component={RouterLink} to={`/projects/${params.row.id}`}>
           <InfoIcon />
         </IconButton>
-        <IconButton color='error' aria-label='error' onClick={() => deleteProject(params.row.id)}>
+        <IconButton color='error' aria-label='error' onClick={() => deleteTask(project.id, params.row.id)}>
           <DeleteForever />
         </IconButton>
       </>);
   }
 
-  const projectColumns: GridColDef[] = [
-    { field: 'name', headerName: 'Project', flex: 0.2 },
-    { field: 'tags', headerName: 'Tags', flex: 0.2 },
-    { field: 'taskCount', headerName: 'Tasks', flex: 0.2 },
-    { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderProjectActions(p), flex: 0.2 }
+  const taskColumns: GridColDef[] = [
+    { field: 'name', headerName: 'Task', flex: 0.4 },
+    { field: 'actualEffort', headerName: 'Effort (hours)', flex: 0.2 },
+    { field: 'isComplete', headerName: 'Completed', flex: 0.2 },
+    { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderTaskActions(p) }
   ];
 
   useEffect(() => {
-    const getCompany = async () => {
+    const getProject = async () => {
       try {
         const accessToken = await getAccessTokenSilently();
-        const fetchedCompany: AxiosResponse<HttpResponseModel<CompanyResponseModel>> =
-          await axios.get<HttpResponseModel<CompanyResponseModel>>(
-            `http://localhost:8012/company/${companyId}/`,
+        const fetchedProject: AxiosResponse<HttpResponseModel<ProjectResponseModel>> =
+          await axios.get<HttpResponseModel<ProjectResponseModel>>(
+            `http://localhost:8012/project/${projectId}/`,
             {
               headers: {
                 Authorization: `bearer ${accessToken}`,
               },
             },
           );
-        setCompany(fetchedCompany.data.data);
-        setFormValues(fetchedCompany.data.data);
+        setProject(fetchedProject.data.data);
+        setFormValues(fetchedProject.data.data);
         setValidation({
-          name: fetchedCompany.data.data.name === '',
-          tags: fetchedCompany.data.data.tags === '',
+          name: fetchedProject.data.data.name === '',
+          tags: fetchedProject.data.data.tags === '',
         });
         setToken(accessToken);
-        console.log(accessToken);
       } catch (e: any) {
         console.log(e.message);
       }
     };
 
-    const getProjects = async () => {
-      try {
-        const accessToken = await getAccessTokenSilently();
-        const fetchedProjects: AxiosResponse<HttpResponseModel<ProjectSummaryResponseModel[]>> =
-          await axios.get<HttpResponseModel<ProjectSummaryResponseModel[]>>(
-            `http://localhost:8012/company/${companyId}/projects`,
-            {
-              headers: {
-                Authorization: `bearer ${accessToken}`,
-              },
-            },
-          );
-        setProjects(fetchedProjects.data.data);
-        console.log(fetchedProjects.data.data);
-      } catch (e: any) {
-        console.log(e.message);
-      }
-    };
 
-    getCompany();
-    getProjects();
+    getProject();
   }, []);
 
-  const updateCompany = async () => {
-    debugger;
+  const updateProject = async () => {
     if (!isFormValid()) {
       setError({
         errorMessage: 'Invalid data',
@@ -166,17 +146,17 @@ const CompanyDetailsPage = () => {
     }
     try {
       const accessToken = await getAccessTokenSilently();
-      await axios.put<HttpResponseModel<CompanyResponseModel>>(
-        `http://localhost:8012/company/${companyId}/`, formValues,
+      await axios.put<HttpResponseModel<ProjectResponseModel>>(
+        `http://localhost:8012/project/${projectId}/`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,
           },
         },
       );
-      navigate('/companies');
+      navigate('/projects');
     } catch (e) {
-      const err = e as AxiosError<HttpResponseModel<CompanyResponseModel>>;
+      const err = e as AxiosError<HttpResponseModel<ProjectResponseModel>>;
       if (err.response?.status === 400) {
         setError({
           errorMessage: err.response.data.errorMessage,
@@ -198,16 +178,28 @@ const CompanyDetailsPage = () => {
           item
           xs={12}
           container
-          direction="column"
+          direction="row"
+          alignItems='center'
         >
-          <Grid item />
-          <Typography
-            gutterBottom
-            variant="h4"
-          >{company?.name === '' ? 'Loading' : company?.name}</Typography>
+
+          <Grid item xs={10} direction='row' alignItems='center'>
+            <Typography
+              gutterBottom
+              variant="h4"
+            >{project?.name === '' ? 'Loading' : project?.name}</Typography>
+          </Grid>
+          <Grid xs={2}>
+            <Button
+              startIcon={<AddCircleOutlineIcon />}
+              variant="outlined"
+              fullWidth
+              component={RouterLink}
+              to={`/projects/${projectId}/tasks/create`}>Add Task</Button>
+          </Grid>
+
         </Grid>
 
-        <Grid xs={12}>
+        <Grid item xs={12}>
           <form onSubmit={handleSubmit}>
             <Grid xs={12} alignItems="center" justifyContent='center' direction="column">
               <Grid item style={{ marginTop: 24 }}>
@@ -237,11 +229,9 @@ const CompanyDetailsPage = () => {
                 />
               </Grid>
 
-
-
               <Grid container style={{ marginTop: 24 }} direction='row' spacing={2}>
                 <Grid item xs={6}>
-                  <Button variant="contained" color="secondary" type="submit" fullWidth component={RouterLink} to='/companies'>
+                  <Button variant="contained" color="secondary" type="submit" fullWidth component={RouterLink} to='/projects'>
                     Cancel
                   </Button>
                 </Grid>
@@ -255,8 +245,8 @@ const CompanyDetailsPage = () => {
               <Grid container style={{ marginTop: 24 }}>
                 <Box sx={{ height: 500, width: '100%' }}>
                   <DataGrid
-                    rows={projects}
-                    columns={projectColumns}
+                    rows={project.tasks}
+                    columns={taskColumns}
                     pageSize={7}
                     rowsPerPageOptions={[7]}
                   />
@@ -274,4 +264,6 @@ const CompanyDetailsPage = () => {
   )
 }
 
-export default CompanyDetailsPage;
+export default withAuthenticationRequired(ProjectDetailsPage, {
+  onRedirecting: () => <RedirectSpinner />
+})
