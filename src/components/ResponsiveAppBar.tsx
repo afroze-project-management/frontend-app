@@ -36,7 +36,6 @@ function ResponsiveAppBar() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
@@ -102,7 +101,7 @@ function ResponsiveAppBar() {
                 <MenuItem
                   key="projects-page"
                   component={RouterLink}
-                  to="/projects">
+                  to="/demo">
                   <Typography textAlign="center">Projects</Typography>
                 </MenuItem>
               </Menu>
@@ -141,7 +140,7 @@ function ResponsiveAppBar() {
                   key="projects-page"
                   sx={{ my: 2, color: 'white', display: 'block' }}
                   component={RouterLink}
-                  to="/projects"
+                  to="/demo"
                 >
                   Projects
                 </Button>

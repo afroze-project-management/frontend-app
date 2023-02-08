@@ -1,73 +1,55 @@
 import { useAuth0, withAuthenticationRequired } from '@auth0/auth0-react';
-import { Container, Box, Typography, Grid, Button, IconButton } from '@mui/material';
-import axios, { AxiosResponse } from 'axios';
-import { useEffect, useState } from 'react';
-import { CompanyResponseModel } from '../../apis/company/CompanyResponseModel';
-import { HttpResponseModel } from '../../apis/HttpResponseModel';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
-import { Link as RouterLink } from 'react-router-dom';
-import InfoIcon from '@mui/icons-material/Info';
-import DeleteForever from '@mui/icons-material/DeleteForever';
-import RedirectSpinner from '../../components/RedirectSpinner';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteForever from '@mui/icons-material/DeleteForever';
+import InfoIcon from '@mui/icons-material/Info';
+import { Box, Button, Container, Grid, IconButton, Typography } from '@mui/material';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { deleteCompany, getCompanies } from '../../apis/company/CompanyApi';
+import { CompanyResponseModel } from '../../apis/company/CompanyResponseModel';
+import RedirectSpinner from '../../components/RedirectSpinner';
 
 const CompaniesPage = () => {
   const { getAccessTokenSilently } = useAuth0();
   const [companies, setCompanies] = useState<CompanyResponseModel[]>([]);
   const [token, setToken] = useState('');
 
-  useEffect(() => {
-    const getCompanies = async () => {
-      try {
-        const accessToken = await getAccessTokenSilently();
-        const fetchedCompanies: AxiosResponse<HttpResponseModel<CompanyResponseModel[]>> =
-          await axios.get<HttpResponseModel<CompanyResponseModel[]>>(
-            `http://localhost:8012/company`,
-            {
-              headers: {
-                Authorization: `bearer ${accessToken}`,
-              },
-            },
-          );
-
-        setToken(accessToken);
-        setCompanies(fetchedCompanies.data.data);
-      } catch (e: any) {
-        console.error(e.message);
-      }
-    };
-
-    getCompanies();
-  }, []);
-
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Company', flex: 0.4 },
     { field: 'tags', headerName: 'Tags', flex: 0.4 },
-    { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderActions(p) }
+    { field: 'actions', headerName: '', sortable: false, renderCell: (p) => renderCompanyRowActions(p) }
   ];
 
-  const deleteCompany = async (id: string) => {
-    await axios.delete(`http://localhost:8012/company/${id}/`, {
-      headers: {
-        Authorization: `bearer ${token}`,
-      },
-    });
+  const loadData = async () => {
+    const accessToken = await getAccessTokenSilently();
+    const fetchedCompanies = await getCompanies(accessToken);
+
+    setToken(accessToken);
+    setCompanies(fetchedCompanies);
+  };
+
+  const handleCompanyDelete = async (id: string) => {
+    await deleteCompany(token, id);
     let updatedCompanies = companies.filter(x => x.id !== +id);
     setCompanies(updatedCompanies);
   }
 
-  const renderActions = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const renderCompanyRowActions = (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
     return (
       <>
         <IconButton color='info' aria-label='info' component={RouterLink} to={`/companies/${params.row.id}`}>
           <InfoIcon />
         </IconButton>
-        <IconButton color='error' aria-label='error' onClick={() => deleteCompany(params.row.id)}>
+        <IconButton color='error' aria-label='error' onClick={() => handleCompanyDelete(params.row.id)}>
           <DeleteForever />
         </IconButton>
       </>);
   }
-
 
   return (
     <Container>
@@ -87,7 +69,7 @@ const CompaniesPage = () => {
             >Companies</Typography>
           </Grid>
 
-          <Grid xs={2}>
+          <Grid item xs={2}>
             <Button
               startIcon={<AddCircleOutlineIcon />}
               variant="outlined"
@@ -96,7 +78,7 @@ const CompaniesPage = () => {
               to={`/companies/create`}>Add Company</Button>
           </Grid>
 
-          <Grid xs={12}>
+          <Grid item xs={12}>
             <Box sx={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={companies}

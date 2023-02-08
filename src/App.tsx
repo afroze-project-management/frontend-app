@@ -14,6 +14,7 @@ import CompaniesPage from './pages/company/CompaniesPage';
 import CompanyDetailsPage from './pages/company/CompanyDetailsPage';
 import CreateCompanyPage from './pages/company/CreateCompanyPage';
 import CreateTaskPage from './pages/task/CreateTaskPage';
+import DemoPage from './pages/DemoPage';
 
 
 function App() {
@@ -57,10 +58,17 @@ function App() {
           element={
             <CreateProjectPage />
           }
-        /><Route
+        />
+        <Route
           path="/projects/:projectId/tasks/create"
           element={
             <CreateTaskPage />
+          }
+        />
+        <Route
+          path="/demo"
+          element={
+            <DemoPage />
           }
         />
       </Route>,

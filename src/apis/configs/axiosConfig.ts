@@ -1,21 +1,16 @@
-import axios from 'axios';
+import { AxiosRequestConfig } from "axios";
 
-export const api = axios.create({
-  withCredentials: true,
-  baseURL: 'https://localhost:8012',
-});
+const baseUrl = 'http://localhost:8012';
 
-const errorHandler = (error: any) => {
-  const statusCode = error.response?.status;
+const getBaseConfig = (url: string, method: string, token: string): AxiosRequestConfig<any> => {
+  return {
+    url: `${baseUrl}${url}`,
+    method: method,
+    headers: {
+      "content-type": "application/json",
+      'Authorization': `bearer ${token}`
+    },
+  };
+}
 
-  // logging only errors that are not 401
-  if (statusCode && statusCode !== 401) {
-    console.error(error);
-  }
-
-  return Promise.reject(error);
-};
-
-api.interceptors.response.use(undefined, (error) => {
-  return errorHandler(error);
-});
+export default getBaseConfig;

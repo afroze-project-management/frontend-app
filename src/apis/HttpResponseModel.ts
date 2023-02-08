@@ -1,5 +1,5 @@
-export interface HttpResponseModel<T> {
-  data: T;
+export interface HttpResponseModel<T = any> {
+  data: T | null;
   isError: boolean;
   errorMessage: string;
 }
