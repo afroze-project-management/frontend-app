@@ -124,12 +124,15 @@ const ProjectDetailsPage = () => {
               },
             },
           );
-        setProject(fetchedProject.data.data);
-        setFormValues(fetchedProject.data.data);
-        setValidation({
-          name: fetchedProject.data.data.name === '',
-          tags: fetchedProject.data.data.tags === '',
-        });
+
+        if (fetchedProject.data.data !== null) {
+          setProject(fetchedProject.data.data);
+          setFormValues(fetchedProject.data.data);
+          setValidation({
+            name: fetchedProject.data.data.name === '',
+            tags: fetchedProject.data.data.tags === '',
+          });
+        }
         setToken(accessToken);
       } catch (e: any) {
         console.error(e.message);

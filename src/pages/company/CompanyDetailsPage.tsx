@@ -120,12 +120,15 @@ const CompanyDetailsPage = () => {
               },
             },
           );
-        setCompany(fetchedCompany.data.data);
-        setFormValues(fetchedCompany.data.data);
-        setValidation({
-          name: fetchedCompany.data.data.name === '',
-          tags: fetchedCompany.data.data.tags === '',
-        });
+
+        if (fetchedCompany.data.data !== null) {
+          setCompany(fetchedCompany.data.data);
+          setFormValues(fetchedCompany.data.data);
+          setValidation({
+            name: fetchedCompany.data.data.name === '',
+            tags: fetchedCompany.data.data.tags === '',
+          });
+        }
         setToken(accessToken);
       } catch (e: any) {
         console.error(e.message);

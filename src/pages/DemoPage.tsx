@@ -11,7 +11,7 @@ const DemoPage = () => {
       try {
         const accessToken = await getAccessTokenSilently();
         const res = await getProjects(accessToken);
-        sc(res.data);
+        sc(res);
       } catch (e: any) {
         console.error(e.message);
       }
