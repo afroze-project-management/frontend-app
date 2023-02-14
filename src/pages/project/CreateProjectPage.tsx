@@ -7,22 +7,13 @@ import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
 import { baseUrl } from "../../common/appenv";
 import RedirectSpinner from "../../components/RedirectSpinner"
+import { errorStateDefaults, ErrorState } from "../../types/ErrorState";
 
 const defaultValues = {
   name: "",
   tags: "",
   companyId: "",
 };
-
-interface ErrorState {
-  showError: boolean;
-  errorMessage: string;
-}
-
-const errorDefaults: ErrorState = {
-  showError: false,
-  errorMessage: ''
-}
 
 const defaultValidation = {
   name: true,
@@ -34,7 +25,7 @@ const defaultValidation = {
 const CreateProjectPage = () => {
   const { companyId } = useParams();
   const [formValues, setFormValues] = useState({ ...defaultValues, companyId: companyId });
-  const [error, setError] = useState<ErrorState>(errorDefaults);
+  const [error, setError] = useState<ErrorState>(errorStateDefaults);
   const [validation, setValidation] = useState(defaultValidation);
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();

@@ -7,6 +7,7 @@ import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import { TaskResponseModel } from "../../apis/project/TaskResponseModel";
 import { baseUrl } from "../../common/appenv";
 import RedirectSpinner from "../../components/RedirectSpinner"
+import { errorStateDefaults, ErrorState } from "../../types/ErrorState";
 
 const defaultValues = {
   name: "",
@@ -15,16 +16,6 @@ const defaultValues = {
   complete: false,
   projectId: "",
 };
-
-interface ErrorState {
-  showError: boolean;
-  errorMessage: string;
-}
-
-const errorDefaults: ErrorState = {
-  showError: false,
-  errorMessage: ''
-}
 
 const defaultValidation = {
   name: true,
@@ -37,7 +28,7 @@ const defaultValidation = {
 const CreateTaskPage = () => {
   const { projectId } = useParams();
   const [formValues, setFormValues] = useState({ ...defaultValues, projectId });
-  const [error, setError] = useState<ErrorState>(errorDefaults);
+  const [error, setError] = useState<ErrorState>(errorStateDefaults);
   const [validation, setValidation] = useState(defaultValidation);
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();

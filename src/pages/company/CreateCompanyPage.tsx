@@ -7,21 +7,12 @@ import { CompanyResponseModel } from "../../apis/company/CompanyResponseModel";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import RedirectSpinner from "../../components/RedirectSpinner";
 import { baseUrl } from "../../common/appenv";
+import { errorStateDefaults, ErrorState } from "../../types/ErrorState";
 
 const defaultValues = {
   name: "",
   tags: "",
 };
-
-interface ErrorState {
-  showError: boolean;
-  errorMessage: string;
-}
-
-const errorDefaults: ErrorState = {
-  showError: false,
-  errorMessage: ''
-}
 
 const defaultValidation = {
   name: true,
@@ -30,7 +21,7 @@ const defaultValidation = {
 
 const CreateCompanyPage = () => {
   const [formValues, setFormValues] = useState(defaultValues);
-  const [error, setError] = useState<ErrorState>(errorDefaults);
+  const [error, setError] = useState<ErrorState>(errorStateDefaults);
   const [validation, setValidation] = useState(defaultValidation);
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();

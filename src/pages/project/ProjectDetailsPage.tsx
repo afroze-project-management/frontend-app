@@ -11,21 +11,12 @@ import RedirectSpinner from "../../components/RedirectSpinner";
 import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { baseUrl } from "../../common/appenv";
+import { errorStateDefaults, ErrorState } from "../../types/ErrorState";
 
 const defaultValues = {
   name: "",
   tags: "",
 };
-
-interface ErrorState {
-  showError: boolean;
-  errorMessage: string;
-}
-
-const errorDefaults: ErrorState = {
-  showError: false,
-  errorMessage: ''
-}
 
 const defaultValidation = {
   name: true,
@@ -34,7 +25,7 @@ const defaultValidation = {
 
 const ProjectDetailsPage = () => {
   const [formValues, setFormValues] = useState(defaultValues);
-  const [error, setError] = useState<ErrorState>(errorDefaults);
+  const [error, setError] = useState<ErrorState>(errorStateDefaults);
   const [validation, setValidation] = useState(defaultValidation);
   const { getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
@@ -67,11 +58,11 @@ const ProjectDetailsPage = () => {
     });
   };
 
-  const handleSnackbarClose = (event: Event | React.SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleSnackbarClose = (_event: Event | React.SyntheticEvent<any, Event>, _reason: SnackbarCloseReason) => {
     setError({ ...error, showError: false });
   }
 
-  const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
+  const handleAlertClose = (_event: React.SyntheticEvent<Element, Event>) => {
     setError({ ...error, showError: false });
   }
 

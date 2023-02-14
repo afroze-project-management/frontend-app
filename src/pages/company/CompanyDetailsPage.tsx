@@ -11,49 +11,42 @@ import { CompanyResponseModel } from "../../apis/company/CompanyResponseModel";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import RedirectSpinner from "../../components/RedirectSpinner";
 import { baseUrl } from '../../common/appenv';
+import { errorStateDefaults, ErrorState } from "../../types/ErrorState";
 
-const defaultValues = {
+const defaultCompanyValues = {
   name: "",
   tags: "",
 };
 
-interface ErrorState {
-  showError: boolean;
-  errorMessage: string;
-}
-
-const errorDefaults: ErrorState = {
-  showError: false,
-  errorMessage: ''
-}
-
-const defaultValidation = {
+const defaultCompanyValidation = {
   name: true,
   tags: true,
 }
 
+const defaultCompanyResponseModel = {
+  id: 0,
+  name: '',
+  projects: [],
+  tags: ''
+};
+
 const CompanyDetailsPage = () => {
-  const [formValues, setFormValues] = useState(defaultValues);
-  const [error, setError] = useState<ErrorState>(errorDefaults);
-  const [validation, setValidation] = useState(defaultValidation);
+  const [formValues, setFormValues] = useState(defaultCompanyValues);
+  const [error, setError] = useState<ErrorState>(errorStateDefaults);
+  const [validation, setValidation] = useState(defaultCompanyValidation);
   const { getAccessTokenSilently } = useAuth0();
-  const navigate = useNavigate();
   const { companyId } = useParams();
-  const [company, setCompany] = useState<CompanyResponseModel>({
-    id: 0,
-    name: '',
-    projects: [],
-    tags: ''
-  });
+  const [company, setCompany] = useState<CompanyResponseModel>(defaultCompanyResponseModel);
+  const navigate = useNavigate();
   const [token, setToken] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): React.FormEventHandler<HTMLFormElement> | undefined => {
+  const handleCompanySubmit = (event: React.FormEvent<HTMLFormElement>): React.FormEventHandler<HTMLFormElement> | undefined => {
     event.preventDefault();
     updateCompany().then();
     return undefined;
   };
 
-  const handleInputChange: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleCompanyInputChange: React.FormEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event: React.FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.currentTarget;
     setFormValues({
       ...formValues,
@@ -66,11 +59,11 @@ const CompanyDetailsPage = () => {
     });
   };
 
-  const handleSnackbarClose = (event: Event | React.SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleSnackbarClose = (_event: Event | React.SyntheticEvent<any, Event>, _reason: SnackbarCloseReason) => {
     setError({ ...error, showError: false });
   }
 
-  const handleAlertClose = (event: React.SyntheticEvent<Element, Event>) => {
+  const handleAlertClose = (_event: React.SyntheticEvent<Element, Event>) => {
     setError({ ...error, showError: false });
   }
 
@@ -203,8 +196,8 @@ const CompanyDetailsPage = () => {
 
         </Grid>
 
-        <Grid xs={12}>
-          <form onSubmit={handleSubmit}>
+        <Grid item xs={12}>
+          <form onSubmit={handleCompanySubmit}>
             <Grid xs={12} alignItems="center" justifyContent='center' direction="column">
               <Grid item style={{ marginTop: 24 }}>
                 <TextField
@@ -216,7 +209,7 @@ const CompanyDetailsPage = () => {
                   value={formValues.name}
                   error={validation.name}
                   helperText={validation.name && 'Required'}
-                  onChange={handleInputChange}
+                  onChange={handleCompanyInputChange}
                 />
               </Grid>
               <Grid item style={{ marginTop: 24 }}>
@@ -229,7 +222,7 @@ const CompanyDetailsPage = () => {
                   value={formValues.tags}
                   error={validation.tags}
                   helperText={validation.tags && 'Required'}
-                  onChange={handleInputChange}
+                  onChange={handleCompanyInputChange}
                 />
               </Grid>
 
