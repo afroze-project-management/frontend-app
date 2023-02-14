@@ -10,6 +10,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { CompanyResponseModel } from "../../apis/company/CompanyResponseModel";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import RedirectSpinner from "../../components/RedirectSpinner";
+import { baseUrl } from '../../common/appenv';
 
 const defaultValues = {
   name: "",
@@ -78,7 +79,7 @@ const CompanyDetailsPage = () => {
   }
 
   const deleteProject = async (id: number) => {
-    await axios.delete(`http://localhost:8012/project/${id}/`, {
+    await axios.delete(`http://${baseUrl}/project/${id}/`, {
       headers: {
         Authorization: `bearer ${token}`,
       },
@@ -113,7 +114,7 @@ const CompanyDetailsPage = () => {
         const accessToken = await getAccessTokenSilently();
         const fetchedCompany: AxiosResponse<HttpResponseModel<CompanyResponseModel>> =
           await axios.get<HttpResponseModel<CompanyResponseModel>>(
-            `http://localhost:8012/company/${companyId}/`,
+            `${baseUrl}/company/${companyId}/`,
             {
               headers: {
                 Authorization: `bearer ${accessToken}`,
@@ -150,7 +151,7 @@ const CompanyDetailsPage = () => {
     try {
       const accessToken = await getAccessTokenSilently();
       await axios.put<HttpResponseModel<CompanyResponseModel>>(
-        `http://localhost:8012/company/${companyId}/`, formValues,
+        `${baseUrl}/company/${companyId}/`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,

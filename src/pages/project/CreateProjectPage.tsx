@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
+import { baseUrl } from "../../common/appenv";
 import RedirectSpinner from "../../components/RedirectSpinner"
 
 const defaultValues = {
@@ -80,7 +81,7 @@ const CreateProjectPage = () => {
     try {
       const accessToken = await getAccessTokenSilently();
       await axios.post<HttpResponseModel<ProjectResponseModel>>(
-        `http://localhost:8012/project`, formValues,
+        `${baseUrl}/project`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,

@@ -6,6 +6,7 @@ import axios, { AxiosError } from 'axios';
 import { CompanyResponseModel } from "../../apis/company/CompanyResponseModel";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import RedirectSpinner from "../../components/RedirectSpinner";
+import { baseUrl } from "../../common/appenv";
 
 const defaultValues = {
   name: "",
@@ -76,7 +77,7 @@ const CreateCompanyPage = () => {
     try {
       const accessToken = await getAccessTokenSilently();
       await axios.post<HttpResponseModel<CompanyResponseModel>>(
-        `http://localhost:8012/company`, formValues,
+        `${baseUrl}/company`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,

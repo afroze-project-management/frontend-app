@@ -10,6 +10,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import RedirectSpinner from "../../components/RedirectSpinner";
 import { ProjectResponseModel } from "../../apis/project/ProjectResponseModel";
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { baseUrl } from "../../common/appenv";
 
 const defaultValues = {
   name: "",
@@ -79,7 +80,7 @@ const ProjectDetailsPage = () => {
   }
 
   const deleteTask = async (projectId: number, taskId: number) => {
-    await axios.delete(`http://localhost:8012/project/${projectId}/task/${taskId}`, {
+    await axios.delete(`${baseUrl}/project/${projectId}/task/${taskId}`, {
       headers: {
         Authorization: `bearer ${token}`,
       },
@@ -117,7 +118,7 @@ const ProjectDetailsPage = () => {
         const accessToken = await getAccessTokenSilently();
         const fetchedProject: AxiosResponse<HttpResponseModel<ProjectResponseModel>> =
           await axios.get<HttpResponseModel<ProjectResponseModel>>(
-            `http://localhost:8012/project/${projectId}/`,
+            `${baseUrl}/project/${projectId}/`,
             {
               headers: {
                 Authorization: `bearer ${accessToken}`,
@@ -154,7 +155,7 @@ const ProjectDetailsPage = () => {
     try {
       const accessToken = await getAccessTokenSilently();
       await axios.put<HttpResponseModel<ProjectResponseModel>>(
-        `http://localhost:8012/project/${projectId}/`, formValues,
+        `${baseUrl}/project/${projectId}/`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,

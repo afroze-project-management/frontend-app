@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { HttpResponseModel } from "../../apis/HttpResponseModel";
 import { TaskResponseModel } from "../../apis/project/TaskResponseModel";
+import { baseUrl } from "../../common/appenv";
 import RedirectSpinner from "../../components/RedirectSpinner"
 
 const defaultValues = {
@@ -83,7 +84,7 @@ const CreateTaskPage = () => {
     try {
       const accessToken = await getAccessTokenSilently();
       await axios.post<HttpResponseModel<TaskResponseModel>>(
-        `http://localhost:8012/project/${projectId}/tasks`, formValues,
+        `${baseUrl}/project/${projectId}/tasks`, formValues,
         {
           headers: {
             Authorization: `bearer ${accessToken}`,
