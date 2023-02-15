@@ -15,6 +15,8 @@ import CompanyDetailsPage from './pages/company/CompanyDetailsPage';
 import CreateCompanyPage from './pages/company/CreateCompanyPage';
 import CreateTaskPage from './pages/task/CreateTaskPage';
 import DemoPage from './pages/DemoPage';
+import Profile from './components/Profile';
+import ProfilePage from './pages/ProfilePage';
 
 
 function App() {
@@ -69,6 +71,12 @@ function App() {
           path="/demo"
           element={
             <DemoPage />
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProfilePage />
           }
         />
       </Route>,

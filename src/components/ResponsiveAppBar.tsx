@@ -171,7 +171,10 @@ function ResponsiveAppBar() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem key="profile-menu">
+                <MenuItem
+                  key="profile-menu"
+                  component={RouterLink}
+                  to="/profile">
                   <Typography textAlign="center">Profile</Typography>
                 </MenuItem>
                 <MenuItem
