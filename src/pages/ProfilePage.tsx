@@ -18,7 +18,6 @@ const ProfilePage = () => {
     return <>Loading</>;
   }
 
-
   return (
     <Container>
       <Grid container style={{ marginTop: 20 }}>
